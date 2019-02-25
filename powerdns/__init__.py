@@ -24,8 +24,8 @@ powerdns - PowerDNS API client and interface
 import logging
 from logging.handlers import SysLogHandler
 from .client import PDNSApiClient
-from .interface import PDNSEndpoint, RRSet
-
+from powerdns.models.endpoint import PDNSEndpoint
+from powerdns.models.rrset import RRSet
 
 #: Current version of the package as :class:`str`.
 __version__ = "0.2.5"

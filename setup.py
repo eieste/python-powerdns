@@ -23,21 +23,20 @@ import setuptools
 
 if __name__ == '__main__':
     readme_file = os.path.join(os.path.dirname(__file__), 'README.md')
-    release = "0.2.5"
+    release = "0.2.6"
     setuptools.setup(
-        name="python-powerdns",
+        name="python-pdns",
         version=release,
-        url="https://github.com/vente-privee/python-powerdns",
+        url="https://github.com/eieste/python-powerdns",
         author="Denis Pompilio (jawa)",
         author_email="dpompilio@vente-privee.com",
-        maintainer="Denis Pompilio (jawa)",
-        maintainer_email="dpompilio@vente-privee.com",
+        maintainer="Stefan Eiermann",
+        maintainer_email="python-org@ultraapp.de",
         description="PowerDNS web api python client and interface",
         long_description=open(readme_file).read(),
         long_description_content_type='text/markdown',
         license="MIT",
         platforms=['UNIX'],
-        scripts=['bin/pdns-create-zone'],
         packages=['powerdns'],
         package_dir={'powerdns': 'powerdns'},
         data_files=[
@@ -49,7 +48,6 @@ if __name__ == '__main__':
             'Operating System :: POSIX :: BSD',
             'Operating System :: POSIX :: Linux',
             'License :: OSI Approved :: MIT License',
-            'Programming Language :: Python :: 2.7',
             'Programming Language :: Python :: 3.4',
             'Programming Language :: Python :: 3.5',
             'Programming Language :: Python :: 3.6',

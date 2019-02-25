@@ -26,7 +26,7 @@ import logging
 from functools import partial
 import requests
 from .exceptions import PDNSError
-
+from powerdns.encoder import PDNSJsonEncoder
 
 LOG = logging.getLogger(__name__)
 
@@ -119,7 +119,8 @@ class PDNSApiClient(object):
 
         if data is None:
             data = {}
-        data = json.dumps(data)
+        data = json.dumps(data, cls=PDNSJsonEncoder)
+        print(data)
 
         LOG.info("request: %s %s", method, url)
         LOG.debug("headers: %s", self.request_headers)
