@@ -1,6 +1,6 @@
 import json
 import os
-
+import copy
 from powerdns.interface import PDNSEndpointBase, LOG
 from powerdns.models.rrset import RRSet
 
@@ -53,8 +53,7 @@ class PDNSZone(PDNSEndpointBase):
             raise LookupError("Please define only rrset_list OR rrsets")
 
         self.rrset_list = rrset_list
-        print(rrsets)
-        print("*"*50)
+
         if rrsets is not None:
             self.rrset_list = [RRSet.parse(data) for data in rrsets]
 
@@ -82,8 +81,18 @@ class PDNSZone(PDNSEndpointBase):
             "tsig_slave_key_ids": tsig_slave_key_ids
         }
 
+        details = copy.copy(self._details)
+
+        for key, value in self._details.items():
+            if value is self.DEFAULTS[key]:
+                del details[key]
+
+        self._details = details
+
         raw_data = self._load_details()
         self.rrset_list = [RRSet.parse(self, data) for data in raw_data["rrsets"]]
+
+        raw_data.pop("url")
         self._details.update(raw_data)
 
 
@@ -121,7 +130,6 @@ class PDNSZone(PDNSEndpointBase):
             zone_data["rrsets"] = self.rrset_list
 
         zone_info = self._patch("{}/zones/{}".format(self._server.get_url(), self.get("id")), data=zone_data)
-        print(zone_info)
 
     def get_url(self):
         return "{}/zones/{}".format(self._server.get_url(), self.get("name"))

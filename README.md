@@ -18,46 +18,7 @@ python setup.py install
 ```
 or
 ```bash
-pip install python-powerdns
-```
-
-## Helpers
-
-**pdns-zone-creator**
-```bash
-usage: pdns-create-zone [-h] -A API -K APIKEY -z ZONE -o ORIGIN -c ZONE -d DNS
-                        [-t TIMERS]
-
-PowerDNS zone creator
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -A API, --api API     PowerDNS api (eg. https://api.domain.tld/api/v1
-  -K APIKEY, --key APIKEY
-                        PowerDNS api key
-  -z ZONE, --zone ZONE  Zone name (canonical)
-  -o ORIGIN, --origin ORIGIN
-                        Zone origin (for SOA)
-  -c ZONE, --contact ZONE
-                        Zone contact (for SOA)
-  -d DNS, --dns DNS     Zone nameservers comma separated
-  -t TIMERS, --timers TIMERS
-                        Zone timers (eg. '28800 7200 604800 86400')
-```
-```bash
-./bin/pdns-create-zone -A "https://api.domain.tld/api/v1" -K "xxxxxxxxx" \
-                       -z "myzone.domain.tld." \
-                       -o "ns01.domain.tld." -c "admin.domain.tld." \
-                       -d "nsd01.domain.tld.,nsd02.domain.tld."
-powerdns.interface INFO: listing available PowerDNS servers
-powerdns.interface INFO: getting available servers from API
-powerdns.client INFO: request: GET https://api.domain.tld/api/v1/servers
-powerdns.client INFO: request response code: 200
-powerdns.interface INFO: 1 server(s) listed
-powerdns.interface INFO: creation of zone: myzone.domain.tld.
-powerdns.client INFO: request: POST https://api.domain.tld/api/v1/servers/localhost/zones
-powerdns.client INFO: request response code: 201
-powerdns.interface INFO: zone myzone.domain.tld. successfully created
+pip install python-pdns
 ```
 
 ## Exemples
@@ -115,34 +76,11 @@ zone.delete_records([
 ])
 ```
 
-Backup and restoration of zones:
-```python
-# Backup every zone of every PowerDNS server
-for server in api.servers:
-    backup_dir = "backups/%s" % server.id
-    for zone in server.zones:
-        zone.backup(backup_dir)
-
-# Restore a single zone on first PowerDNS server
-zone_file = "backups/pdns-server-01/my.domain.tld.json"
-api.servers[0].restore_zone(zone_file)
-```
 
 ## License
 
 MIT LICENSE *(see LICENSE file)*
 
-## Miscellaneous
-
-```
-    ╚⊙ ⊙╝
-  ╚═(███)═╝
- ╚═(███)═╝
-╚═(███)═╝
- ╚═(███)═╝
-  ╚═(███)═╝
-   ╚═(███)═╝
-```
 
 [1]: https://img.shields.io/badge/python-2.7,3.4+-blue.svg
 [1l]: https://github.com/vente-privee/python-powerdns

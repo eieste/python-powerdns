@@ -1,7 +1,6 @@
 from powerdns.exceptions import PDNSCanonicalError
 from powerdns.interface import LOG
 
-
 class RRSet:
     """Resource record data for PowerDNS API
 
@@ -25,10 +24,21 @@ class RRSet:
             "changetype": changetype
         }
 
+        self._deleted_records = []
+
+    def json(self):
+        json = self._details
+        json["type"] = json.pop("rtype")
+        json["records"] += self._deleted_records
+        return self._details
+
+
     def get(self, name):
         return self._details[name]
 
     def set(self, name, value):
+        if name == "name" and self.get("name") is not None:
+            raise ValueError("You cant change the Name. If you change the name anyway, please Create a new RRSet with the new Informations and delete this one")
         self._details[name] = value
 
     def __str__(self):
@@ -46,10 +56,8 @@ class RRSet:
         #                                  self['type'],
         #                                  records)
 
-
     @classmethod
     def parse(cls, zone, raw_data):
-        print(raw_data)
         return cls(
             zone,
             name=raw_data["name"],
@@ -83,3 +91,11 @@ class RRSet:
                     LOG.debug("transforming %s with %s",
                               record['content'], zone)
                     record['content'] += ".%s" % zone
+
+    def mark_as_deleted(self):
+        from powerdns.models.zone import PDNSZone
+        if isinstance(self._zone, PDNSZone):
+            self.set("changetype", "DELETE")
+            self._zone.save()
+        else:
+            raise LookupError("This rrset is not 'connected' to a Zone")

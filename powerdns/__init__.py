@@ -28,7 +28,7 @@ from powerdns.models.endpoint import PDNSEndpoint
 from powerdns.models.rrset import RRSet
 
 #: Current version of the package as :class:`str`.
-__version__ = "0.2.5"
+__version__ = "0.0.1"
 
 LOG_LEVELS = [
     logging.ERROR,

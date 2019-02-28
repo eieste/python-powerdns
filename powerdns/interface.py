@@ -32,7 +32,6 @@ class PDNSEndpointBase(object):
     """
     def __init__(self, up):
         """Initialization method"""
-        print("CALL")
         api_client = self.get_api_client(up)
         self._get = api_client.get
         self._post = api_client.post
