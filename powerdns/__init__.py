@@ -26,6 +26,8 @@ from logging.handlers import SysLogHandler
 from .client import PDNSApiClient
 from powerdns.models.endpoint import PDNSEndpoint
 from powerdns.models.rrset import RRSet
+from powerdns.models.server import PDNSServer
+from powerdns.models.zone import PDNSZone
 
 #: Current version of the package as :class:`str`.
 __version__ = "0.0.1"
