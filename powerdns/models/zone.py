@@ -111,6 +111,9 @@ class PDNSZone(PDNSEndpointBase):
     def get_parent(self):
         return self._server
 
+    def json(self):
+        return self._details
+
     @classmethod
     def parse(cls, server, raw_data):
         raw_data.pop("url")
@@ -118,10 +121,16 @@ class PDNSZone(PDNSEndpointBase):
         # ToDo parse rrsets
         return cls(server, **raw_data)
 
-    def create(self):
-        zone_data = self._details
-        zone_data = self._post("{}/zones".format(self._server.get_url()), data=zone_data)
-        print(zone_data)
+    def create(self, server):
+        """
+            Creates a new zone
+            :param server: Instance of server
+            :return zone: Created Zone
+        """
+        self._server = server
+        zone_data = self._post("{}/zones".format(self._server.get_url()), data=self.json())
+        LOG.debug(zone_data)
+        return self
 
     def save(self):
         zone_data = self._details
@@ -191,29 +200,3 @@ class PDNSZone(PDNSEndpointBase):
         # reset zone object cache
         self._details = None
         return self._patch(self.url, data={'rrsets': rrsets})
-
-    def backup(self, directory, filename=None, pretty_json=False):
-        """Backup zone data to json file
-
-        :param str directory: Directory to store json file
-        :param str filename: Json file name
-
-        If filename is not provided, destination file is generated with zone
-        name (stripping the last dot) and extension `.json`.
-        """
-        LOG.info("backup of zone: %s", self.name)
-        if not filename:
-            filename = self.name.rstrip('.') + ".json"
-        json_file = os.path.join(directory, filename)
-        LOG.info("backup file is %s", json_file)
-
-        with open(json_file, "w") as backup_fp:
-            if pretty_json:
-                json.dump(self.details,
-                          backup_fp,
-                          ensure_ascii=True,
-                          indent=2,
-                          sort_keys=True)
-            else:
-                json.dump(self.details, backup_fp)
-        LOG.info("zone %s successfully saved", self.name)

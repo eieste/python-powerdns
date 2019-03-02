@@ -184,11 +184,13 @@ class PDNSServer(PDNSEndpointBase):
         LOG.info("zone best match: %s", best_match)
         return best_match
 
-    # pylint: disable=inconsistent-return-statements
-    # TODO: Full implementation of zones endpoint
     def create_zone(self, zone):
-        zone._server = self
-        zone.create()
+        """
+            Creates a new zone on current server
+            :param zone: new zone object
+            :return zone: created zone
+        """
+        zone.create(self)
         return zone
 
     def delete_zone(self, name):
