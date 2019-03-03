@@ -120,10 +120,11 @@ class PDNSApiClient(object):
         if data is None:
             data = {}
         data = json.dumps(data, cls=PDNSJsonEncoder)
-        print(data)
+
         LOG.info("request: %s %s", method, url)
         LOG.debug("headers: %s", self.request_headers)
         LOG.debug("data: %s", data)
+
         response = requests.request(method, url,
                                     data=data,
                                     headers=self.request_headers,

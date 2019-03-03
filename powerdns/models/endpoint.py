@@ -3,30 +3,20 @@ from powerdns.models.server import PDNSServer
 
 
 class PDNSEndpoint(PDNSEndpointBase):
-    """PowerDNS API Endpoint
 
-    :param PDNSApiClient api_client: Cachet API client instance
-
-    The :class:`~PDNSEndpoint` class defines the following attributes:
-
-    .. autoattribute:: servers
-
-    .. seealso:: https://doc.powerdns.com/md/httpapi/api_spec/#api-spec
-    """
     def __init__(self, api_client):
         """Initialization method"""
-        self._api_client = api_client
-        super(PDNSEndpoint, self).__init__(self)
-        self._servers = None
-        self._server_list = None
-        if not self._servers:
-            self._server_list = self._load_server_list()
+        super(PDNSEndpoint, self).__init__(api_client)
+        self._server_list = self._load_server_list()
 
     def __repr__(self):
-        return 'PDNSEndpoint(%s)' % self.api_client
+        return 'PDNSEndpoint(%s)' % self.get_api_client()
 
     def __str__(self):
-        return 'PDNSEndpoint:%s' % self.api_client.api_endpoint
+        return 'PDNSEndpoint:%s' % self.get_api_client()
+
+    def get_api_client(self):
+        return self._parent
 
     def _load_server_list(self):
         """

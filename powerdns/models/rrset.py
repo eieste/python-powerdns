@@ -1,5 +1,7 @@
 from powerdns.exceptions import PDNSCanonicalError
 from powerdns.interface import LOG
+from powerdns.interface import PDNSEndpointBase
+import copy
 
 class RRSet:
     """Resource record data for PowerDNS API
@@ -12,10 +14,8 @@ class RRSet:
 
     .. seealso:: https://doc.powerdns.com/md/httpapi/api_spec/#url-apiv1serversserver95idzoneszone95id
     """
-    def __init__(self, zone, name=None, rtype=None, records=None, ttl=3600, changetype='REPLACE'):
-
-        self._zone = zone
-
+    def __init__(self, zone=None, name=None, rtype=None, records=None, ttl=3600, changetype='REPLACE'):
+        self._parent = zone
         self._details = {
             "name": name,
             "rtype": rtype,
@@ -23,17 +23,17 @@ class RRSet:
             "ttl": ttl,
             "changetype": changetype
         }
-
         self._deleted_records = []
 
     def json(self):
-        json = self._details
-        json["type"] = json.pop("rtype")
+        json = copy.copy(self._details)
+        if "rtype" in self._details:
+            json["type"] = json.pop("rtype")
         json["records"] += self._deleted_records
-        return self._details
-
+        return json
 
     def get(self, name):
+        print(self._details, name)
         return self._details[name]
 
     def set(self, name, value):
@@ -42,7 +42,7 @@ class RRSet:
         self._details[name] = value
 
     def __str__(self):
-        pass
+        return str(self.json())
         # records = []
         #
         # for rr in self.raw_records:
@@ -85,7 +85,7 @@ class RRSet:
         if not self['name'].endswith('.'):
             LOG.debug("transforming %s with %s", self['name'], zone)
             self['name'] += ".%s" % zone
-        if self['type'] == 'CNAME':
+        if self['rtype'] == 'CNAME':
             for record in self['records']:
                 if not record['content'].endswith('.'):
                     LOG.debug("transforming %s with %s",
@@ -94,8 +94,8 @@ class RRSet:
 
     def mark_as_deleted(self):
         from powerdns.models.zone import PDNSZone
-        if isinstance(self._zone, PDNSZone):
+        if isinstance(self._parent, PDNSZone):
             self.set("changetype", "DELETE")
-            self._zone.save()
+            self._parent.save()
         else:
             raise LookupError("This rrset is not 'connected' to a Zone")

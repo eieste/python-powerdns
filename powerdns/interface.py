@@ -25,25 +25,25 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-class PDNSEndpointBase(object):
-    """Powerdns API Endpoint Base
+class PDNSEndpointBase:
 
-        :param PDNSApiClient api_client: Cachet API client instance
-    """
-    def __init__(self, up):
-        """Initialization method"""
-        api_client = self.get_api_client(up)
+    def __init__(self, parent):
+        if parent:
+            self._parent = parent
+            api_client = self.get_api_client()
+            self.patch_methods(api_client)
+
+
+    def patch_methods(self, api_client):
         self._get = api_client.get
         self._post = api_client.post
         self._patch = api_client.patch
         self._put = api_client.put
         self._delete = api_client.delete
 
-
-    def get_api_client(self, up):
-        from powerdns.models.endpoint import PDNSEndpoint
-
-        if isinstance(up, PDNSEndpoint):
-            return up._api_client
-        else:
-            return up.get_api_client(up.get_parent())
+    def get_api_client(self):
+        if self._parent is not None:
+            if hasattr(self._parent, "get_api_client"):
+                return self._parent.get_api_client()
+            else:
+                return self._parent
