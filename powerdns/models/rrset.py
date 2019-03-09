@@ -3,6 +3,7 @@ from powerdns.interface import LOG
 from powerdns.interface import PDNSEndpointBase
 import copy
 
+
 class RRSet:
     """Resource record data for PowerDNS API
 
@@ -33,7 +34,6 @@ class RRSet:
         return json
 
     def get(self, name):
-        print(self._details, name)
         return self._details[name]
 
     def set(self, name, value):

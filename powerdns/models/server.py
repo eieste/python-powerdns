@@ -37,7 +37,8 @@ class PDNSServer(PDNSEndpointBase):
         return "/servers/{}/zones".format(self.get("id"))
 
     def _load_zone_list(self):
-        return [PDNSZone.parse(self, data) for data in self._get(self.get_zone_url())]
+        result = [PDNSZone.parse(self, data) for data in self._get(self.get_zone_url())]
+        return result
 
     @property
     def zones(self):

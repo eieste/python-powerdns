@@ -148,16 +148,20 @@ class PDNSZone(PDNSEndpointBase):
         raw_data = self._get(self.get_url())
         return raw_data
 
-    def get_rrset(self, name):
+    @classmethod
+    def get_rrset_from_list(cls, rrset_list, rrset_name):
         """
         Get record data
 
         :param str name: Record name
         :return: Records rrset
         """
-        for rr in self.get("rrsets"):
-            if name == rr.get("name"):
+        for rr in rrset_list:
+            if rrset_name == rr.get("name"):
                 return rr
+
+    def get_rrset(self, name):
+        return self.__class__.get_rrset_from_list(self.get("rrsets"), name)
 
     def append_rrset(self, rrset):
         assert isinstance(rrset, RRSet)
@@ -165,3 +169,22 @@ class PDNSZone(PDNSEndpointBase):
         rrset._zone = self
         rrsets.append(rrset)
         self.set("rrsets", rrsets)
+
+    def full_rrset_update(self, rrsets_for_update):
+        new_rrsets = []
+        for rr in self.get("rrsets"):
+            exists_rrset = self.__class__.get_rrset_from_list(rrsets_for_update, rr.get("name"))
+            if exists_rrset:
+                rr.set("changetype", "REPLACE")
+                new_rrsets.append(exists_rrset)
+            else:
+                if rr.get("rtype") not in ["SOA", "NS"]:
+                    rr.set("changetype", "DELETE")
+                    new_rrsets.append(rr)
+
+        for newrr in rrsets_for_update:
+            if not self.__class__.get_rrset_from_list(new_rrsets, newrr.get("name")):
+                new_rrsets.append(newrr)
+
+
+        self.set("rrsets", new_rrsets)
